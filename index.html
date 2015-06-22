@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html ng-app="showcase">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+</head>
+<body>
+    <h2>Generated REST service</h2>
+    <table>
+        <tr>
+            <td>
+                <strong>Register a resource</strong>
+            </td>
+            <td>
+                <strong>Register a user</strong>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <form method="post" action="http://127.0.0.1:3000/resources" style="border:2px solid black">
+                    <label for="title">Title:</label>
+                    <input type="text" name="title" id="title">
+                    <br/>
+
+                    <label for="year">Year:</label>
+                    <input type="text" name="year" id="year">
+                    <br/>
+
+                    <input type="submit">
+                </form>
+            </td>
+            <td>
+                <form method="post" action="http://127.0.0.1:3000/users" style="border:2px solid black">
+                    <label for="name">Username:</label>
+                    <input type="text" name="name" id="name">
+                    <br/>
+
+                    <label for="email">Email:</label>
+                    <input type="text" name="email" id="email">
+                    <br/>
+
+                    <label for="admin">Admin:</label>
+                    <input type="checkbox" name="admin" id="admin">
+                    <br/>
+
+                    <input type="submit">
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p>GET <a href="http://127.0.0.1:3000/resources">/resources</a></p>
+                <p>GET /resources/:id</p>
+                <p>POST /resources</p>
+                <p>PUT /resources/:id</p>
+                <p>DELETE /resources/:id</p>
+            </td>
+            <td>
+                <p>GET <a href="http://127.0.0.1:3000/users">/users</a></p>
+                <p>GET /users/:id</p>
+                <p>POST /users</p>
+                <p>PUT /users/:id</p>
+                <p>DELETE /users/:id</p>
+            </td>
+        </tr>
+    </table>
+    <hr/>
+    <h2>Custom routes</h2>
+    <p>GET /resources/title/:title</p>
+    <p>GET /hello</p>
+    <p>GET /status</p>
+    <p>POST /post</p>
+
+    <div ng-controller="WithAjaxCtrl as showCase">
+        <table datatable="" dt-options="showCase.dtOptions" dt-columns="showCase.dtColumns" class="row-border hover"></table>
+    </div>
+
+    <script src="jquery.min.js"></script>
+    <script src="jquery.dataTables.min.js"></script>
+    <script src="angular.min.js"></script>
+    <script src="angular-datatables.min.js"></script>
+    <script src="angular-app.js"></script>
+</body>
+</html>
