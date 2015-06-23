@@ -48,14 +48,15 @@ app.get('/', function(req, res){
 
 io.on("connection", function(socket){
   console.log('a user connected');
-  // console.log(socket.request);
 
   socket.on("login", function(credentials){
-    // if(connectedUsers)
-    connectedUsers.push({userId: userId, user : credentials["user"], pass : credentials["pass"]});
-    console.log(connectedUsers);
-    io.emit('didLogin', {"userId": userId, "connectedUsers" : connectedUsers});
+    connectedUsers.push({userId: userId, user : credentials["user"], pass : credentials["pass"], socketId : socket.id, inGame : false});
+    io.sockets.connected[socket.id].emit('didLogin', {"userId": userId, "connectedUsers" : connectedUsers});
     userId++;
+  });
+
+  socket.on('getAvailablePlayers', function() {
+    io.sockets.connected[socket.id].emit('availablePlayers', {"availablePlayers": getAvailablePlayers(userIdFromUserSocketId(socket.id))});
   });
 
   socket.on('disconnectUser', function (userId) {
@@ -65,10 +66,58 @@ io.on("connection", function(socket){
             break;
         }
     }
-    console.log(connectedUsers);
+  });
+
+  socket.on('requestPlay', function (gameInfo) {
+    console.log(userSocketIdFromUserId(gameInfo["opponentId"]));
+    io.sockets.connected[userSocketIdFromUserId(gameInfo["opponentId"])].emit('playRequest', {"gameType" : gameInfo["gameType"], "requesterId" : gameInfo["requesterId"]});
+  });
+
+  socket.on('denyGame', function (data) {
+    io.sockets.connected[userSocketIdFromUserId(data["opponentId"])].emit('gameDenied', {});
   });
 });
 
+function getAvailablePlayers(userId)
+{
+    dropDisconnectedUsers();
+    var availablePlayers = [];
+    for(var i in connectedUsers){
+        if(connectedUsers[i]["userId"] != userId){
+            availablePlayers.push(connectedUsers[i]);
+        }
+    } 
+    return availablePlayers;
+}
+
+function userSocketIdFromUserId(userId) {
+    for(var i in connectedUsers){
+        if(connectedUsers[i]["userId"] == userId){
+            return connectedUsers[i].socketId;
+        }
+    }
+}
+
+function userIdFromUserSocketId(socketId) {
+    for(var i in connectedUsers){
+        if(connectedUsers[i]["socketId"] == socketId){
+            return connectedUsers[i].userId;
+        }
+    }
+}
+
+function dropDisconnectedUsers() {
+    for(var i in connectedUsers) {
+        if(!io.sockets.connected[connectedUsers[i].socketId]) {
+            connectedUsers.splice(i,1);
+        }
+    }
+    console.log(connectedUsers);
+}
+
+setInterval(function() {
+    dropDisconnectedUsers();
+}, 1000);
 
 
 app.get("/hello", function(req, res){
@@ -87,15 +136,5 @@ app.post("/post", function(req, res){
     console.log(req.body);
     res.json(req.body);
 });
-
-// app.get("/resources/title/:title", function(req, res){
-//     Resource.findOne({title:req.params['title']}, function(err, data){
-//         if(!err){
-//             res.json(data);
-//         } else {
-//             res.status(500).end();
-//         }
-//     });
-// });
 
 app.listen(3000);
