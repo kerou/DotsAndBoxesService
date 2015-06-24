@@ -53,6 +53,7 @@ io.on("connection", function(socket){
     connectedUsers.push({userId: userId, user : credentials["user"], pass : credentials["pass"], socketId : socket.id, inGame : false});
     io.sockets.connected[socket.id].emit('didLogin', {"userId": userId, "connectedUsers" : connectedUsers});
     userId++;
+    socket.emit('playerJoined', {});
   });
 
   socket.on('getAvailablePlayers', function() {
