@@ -69,18 +69,22 @@ io.on("connection", function(socket){
   });
 
   socket.on('requestPlay', function (gameInfo) {
-    console.log(gameInfo["opponentId"]);
+    // console.log(gameInfo["opponentId"]);
     io.sockets.connected[userSocketIdFromUserId(gameInfo["opponentId"])].emit('playRequest', {"gameType" : gameInfo["gameType"], "requesterId" : gameInfo["requesterId"]});
   });
 
+  socket.on('addLine', function(data) {
+    io.sockets.connected[userSocketIdFromUserId(data["opponentId"])].emit('lineAdded', {"row" : data["row"], "column" : data["column"], "isVertical" : data["isVertical"]});
+  });
+
   socket.on('acceptGame', function(data) {
-    console.log(data["opponentId"]);
+    // console.log(data["opponentId"]);
     io.sockets.connected[userSocketIdFromUserId(data["opponentId"])].emit('gameAccepted', {});
   });
 
   socket.on('denyGame', function (data) {
-    console.log("DENY GAME");
-    console.log(data["opponentId"]);
+    // console.log("DENY GAME");
+    // console.log(data["opponentId"]);
     io.sockets.connected[userSocketIdFromUserId(data["opponentId"])].emit('gameDenied', {});
   });
 });
@@ -119,7 +123,7 @@ function dropDisconnectedUsers() {
             connectedUsers.splice(i,1);
         }
     }
-    // console.log(connectedUsers);
+    console.log(connectedUsers);
 }
 
 setInterval(function() {
